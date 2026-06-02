@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Warmy Seed List 控制面板</title>
+<style>
+  :root {
+    --bg: #1a1b1e;
+    --card: #25262b;
+    --border: #373a40;
+    --text: #c1c2c5;
+    --text-dim: #909296;
+    --accent: #4c6ef5;
+    --accent-hover: #5c7cfa;
+    --green: #40c057;
+    --green-bg: rgba(64, 192, 87, 0.12);
+    --red: #fa5252;
+    --red-bg: rgba(250, 82, 82, 0.12);
+    --yellow: #fab005;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  h1 { font-size: 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+  h1 small { font-size: 13px; color: var(--text-dim); font-weight: normal; }
+  h2 { font-size: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge-green { background: var(--green-bg); color: var(--green); }
+  .badge-red { background: var(--red-bg); color: var(--red); }
+  .badge-dim { background: rgba(144, 146, 150, 0.12); color: var(--text-dim); }
+
+  .group-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .group-row:last-child { border-bottom: none; }
+  .group-info { flex: 1; }
+  .group-name { font-weight: 600; }
+  .group-id { font-size: 12px; color: var(--text-dim); }
+
+  input, select, textarea {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 100%;
+    font-family: var(--font);
+  }
+  input:focus, select:focus { outline: none; border-color: var(--accent); }
+  .input-group { display: flex; gap: 8px; align-items: center; }
+  .input-group input { flex: 1; }
+  .input-row { margin-bottom: 10px; }
+  .input-row label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
+
+  .btn {
+    padding: 7px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: all 0.15s;
+    font-family: var(--font);
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-danger { background: var(--red); color: #fff; }
+  .btn-danger:hover { background: #e03131; }
+  .btn-success { background: var(--green); color: #fff; }
+  .btn-success:hover { background: #2f9e44; }
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-sm { padding: 4px 10px; font-size: 12px; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .flex { display: flex; }
+  .flex-center { align-items: center; }
+  .gap-8 { gap: 8px; }
+  .gap-12 { gap: 12px; }
+  .mt-8 { margin-top: 8px; }
+  .mt-12 { margin-top: 12px; }
+  .mb-8 { margin-bottom: 8px; }
+  .text-dim { color: var(--text-dim); }
+  .text-sm { font-size: 12px; }
+
+  .toggle {
+    position: relative;
+    width: 40px;
+    height: 22px;
+    background: var(--border);
+    border-radius: 11px;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .toggle.active { background: var(--accent); }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 18px; height: 18px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.2s;
+  }
+  .toggle.active::after { transform: translateX(18px); }
+
+  #log-panel {
+    max-height: 300px;
+    overflow-y: auto;
+    background: var(--bg);
+    border-radius: 6px;
+    padding: 10px;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  /* cron 快捷选择 */
+  .cron-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .cron-presets button {
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 12px;
+    font-family: var(--font);
+    transition: all 0.15s;
+  }
+  .cron-presets button:hover,
+  .cron-presets button.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(76, 110, 245, 0.1);
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 10px 20px;
+    border-radius: 8px;
+    z-index: 999;
+    font-size: 13px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    max-width: 90%;
+  }
+  .toast.show { opacity: 1; }
+  .toast.success { border-color: var(--green); }
+  .toast.error { border-color: var(--red); }
+
+  .loading {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid var(--text-dim);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 600px) {
+    body { padding: 12px; }
+    .card { padding: 12px; }
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+  .status-dot.on { background: var(--green); }
+  .status-dot.off { background: var(--red); }
+</style>
+</head>
+<body>
+
+<h1>📊 Warmy Seed List <small>控制面板</small></h1>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<!-- 状态概览 -->
+<div class="card">
+  <div class="card-header">
+    <h2>🔌 服务状态</h2>
+    <span id="server-status" class="badge badge-dim">检查中...</span>
+  </div>
+  <div class="flex flex-center gap-12 text-sm">
+    <span>已配置: <strong id="group-count">-</strong> 个 Sender</span>
+    <span>调度: <strong id="schedule-label">-</strong></span>
+    <span>目标邮箱: <strong id="status-email">-</strong></span>
+  </div>
+</div>
+
+<!-- 立即执行 -->
+<div class="card">
+  <div class="card-header">
+    <h2>⚡ 立即执行</h2>
+    <button id="btn-run-all" class="btn btn-success">▶ 运行所有启用的</button>
+  </div>
+  <div class="input-row">
+    <label>指定 Group ID（可选，留空则拉取所有启用）</label>
+    <div class="input-group">
+      <input id="run-group-id" placeholder="例如 19496" />
+      <button id="btn-run-single" class="btn btn-primary">▶ 运行</button>
+    </div>
+  </div>
+  <div class="input-row mt-8">
+    <label>临时目标邮箱（可选，覆盖默认配置）</label>
+    <input id="run-temp-email" placeholder="留空使用默认邮箱" />
+  </div>
+  <div class="mt-8 text-sm text-dim" id="run-status" style="display:none;">
+    <span class="loading"></span> 后台任务已启动...
+  </div>
+</div>
+
+<!-- Sender 管理 -->
+<div class="card">
+  <div class="card-header">
+    <h2>📋 Sender Groups</h2>
+    <button id="btn-add-group-show" class="btn btn-sm btn-outline">+ 新增</button>
+  </div>
+
+  <!-- 添加表单 -->
+  <div id="add-group-form" style="display:none;" class="mb-8">
+    <div class="flex gap-8">
+      <input id="new-split-id" placeholder="Split ID" style="flex:1;" />
+      <input id="new-sender-name" placeholder="名称（如 mosscode）" style="flex:2;" />
+      <button id="btn-add-group-confirm" class="btn btn-primary btn-sm">添加</button>
+      <button id="btn-add-group-cancel" class="btn btn-outline btn-sm">取消</button>
+    </div>
+  </div>
+
+  <div id="group-list"></div>
+</div>
+
+<!-- 调度配置 -->
+<div class="card">
+  <div class="card-header">
+    <h2>⏰ 定时调度</h2>
+  </div>
+  <div class="flex flex-center gap-12 mb-8">
+    <span class="text-sm">启用调度</span>
+    <div id="schedule-toggle" class="toggle"></div>
+  </div>
+  <div class="input-row">
+    <label>Cron 表达式</label>
+    <input id="cron-expr" value="0 12 * * 1" />
+  </div>
+  <div class="text-sm text-dim mb-8">
+    时区: Asia/Shanghai · 
+    提示: 修改后需要手动更新 OpenClaw cron job 才能生效
+  </div>
+  <div class="cron-presets" id="cron-presets">
+    <button data-cron="0 12 * * 1">每周一 12:00</button>
+    <button data-cron="0 12 * * 1,3,5">周一/三/五 12:00</button>
+    <button data-cron="0 12 * * 1-5">工作日 12:00</button>
+    <button data-cron="0 9,12,15 * * 1-5">工作日 9/12/15点</button>
+    <button data-cron="0 8 * * 1">周一 08:00</button>
+    <button data-cron="0 6 * * 1">周一 06:00</button>
+  </div>
+  <button id="btn-save-schedule" class="btn btn-primary mt-8">保存调度配置</button>
+</div>
+
+<!-- 发送配置 -->
+<div class="card">
+  <div class="card-header">
+    <h2>📬 发送配置</h2>
+  </div>
+  <div class="input-row">
+    <label>SMTP 目标邮箱（接收 Excel 附件）</label>
+    <div class="input-group">
+      <input id="target-email" type="email" />
+      <button id="btn-save-email" class="btn btn-primary btn-sm">保存</button>
+    </div>
+  </div>
+  <div class="input-row mt-8">
+    <label>飞书分享用户 OpenID</label>
+    <div class="input-group">
+      <input id="target-openid" />
+      <button id="btn-save-openid" class="btn btn-primary btn-sm">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 运行日志 -->
+<div class="card">
+  <div class="card-header">
+    <h2>📜 运行日志</h2>
+    <button id="btn-refresh-logs" class="btn btn-sm btn-outline">🔄 刷新</button>
+  </div>
+  <div id="log-panel">点击「刷新」加载日志...</div>
+</div>
+
+<script>
+// ─── API 地址 ────────────────────────────────────────
+const API = '';
+// 同域请求
+
+// ─── Toast ────────────────────────────────────────────
+let toastTimer = null;
+function toast(msg, type = 'info') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.className = 'toast', 3000);
+}
+
+// ─── 状态 ─────────────────────────────────────────────
+let config = null;
+
+async function loadConfig() {
+  const res = await fetch(API + '/api/config');
+  config = await res.json();
+  renderGroups();
+  renderStatus();
+  document.getElementById('target-email').value = config.target_email || '';
+  document.getElementById('target-openid').value = config.target_openid || '';
+  document.getElementById('cron-expr').value = config.schedule?.cron_expr || '0 12 * * 1';
+  
+  const toggle = document.getElementById('schedule-toggle');
+  toggle.classList.toggle('active', config.schedule?.enabled === true);
+
+  // 高亮对应的 presets
+  document.querySelectorAll('.cron-presets button').forEach(b => {
+    b.classList.toggle('active', b.dataset.cron === config.schedule?.cron_expr);
+  });
+}
+
+async function loadHealth() {
+  try {
+    const res = await fetch(API + '/api/health');
+    const h = await res.json();
+    document.getElementById('server-status').textContent = '🟢 运行中';
+    document.getElementById('server-status').className = 'badge badge-green';
+    document.getElementById('group-count').textContent = h.groups_count;
+  } catch(e) {
+    document.getElementById('server-status').textContent = '🔴 离线';
+    document.getElementById('server-status').className = 'badge badge-red';
+  }
+}
+
+function renderStatus() {
+  if (!config) return;
+  document.getElementById('schedule-label').textContent =
+    config.schedule?.enabled ? config.schedule.label || config.schedule.cron_expr : '未启用';
+  document.getElementById('status-email').textContent = config.target_email || '未设置';
+}
+
+function renderGroups() {
+  const list = document.getElementById('group-list');
+  if (!config || !config.groups.length) {
+    list.innerHTML = '<div class="text-dim text-sm">暂无配置，点击「+ 新增」添加 Sender Group</div>';
+    return;
+  }
+  list.innerHTML = config.groups.map((g, i) => `
+    <div class="group-row">
+      <div class="toggle ${g.enabled ? 'active' : ''}" data-idx="${i}"
+           onclick="toggleGroup(${i})"></div>
+      <div class="group-info">
+        <div class="group-name">${escHtml(g.name)}</div>
+        <div class="group-id">Split ID: ${escHtml(g.split_id)}</div>
+      </div>
+      <button class="btn btn-sm btn-danger" onclick="removeGroup('${escHtml(g.split_id)}')">删除</button>
+    </div>
+  `).join('');
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ─── Group CRUD ───────────────────────────────────────
+document.getElementById('btn-add-group-show').onclick = () => {
+  document.getElementById('add-group-form').style.display = 'block';
+};
+document.getElementById('btn-add-group-cancel').onclick = () => {
+  document.getElementById('add-group-form').style.display = 'none';
+  document.getElementById('new-split-id').value = '';
+  document.getElementById('new-sender-name').value = '';
+};
+document.getElementById('btn-add-group-confirm').onclick = async () => {
+  const split_id = document.getElementById('new-split-id').value.trim();
+  const name = document.getElementById('new-sender-name').value.trim();
+  if (!split_id) { toast('请输入 Split ID', 'error'); return; }
+  const res = await fetch(API + '/api/config/groups', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ split_id, name: name || `group_${split_id}`, enabled: true }),
+  });
+  if (res.ok) {
+    toast('已添加 ✅');
+    await loadConfig();
+    document.getElementById('add-group-form').style.display = 'none';
+    document.getElementById('new-split-id').value = '';
+    document.getElementById('new-sender-name').value = '';
+  } else {
+    toast('添加失败', 'error');
+  }
+};
+
+async function toggleGroup(idx) {
+  if (!config) return;
+  const g = config.groups[idx];
+  g.enabled = !g.enabled;
+  const res = await fetch(API + '/api/config/groups', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(g),
+  });
+  if (res.ok) await loadConfig();
+}
+
+async function removeGroup(splitId) {
+  if (!confirm(`确认删除 Split ${splitId}?`)) return;
+  const res = await fetch(API + `/api/config/groups/${splitId}`, { method: 'DELETE' });
+  if (res.ok) {
+    toast('已删除');
+    await loadConfig();
+  } else {
+    toast('删除失败', 'error');
+  }
+}
+
+// ─── Schedule ─────────────────────────────────────────
+document.querySelectorAll('.cron-presets button').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('.cron-presets button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById('cron-expr').value = b.dataset.cron;
+  };
+});
+
+document.getElementById('schedule-toggle').onclick = function() {
+  this.classList.toggle('active');
+};
+
+document.getElementById('btn-save-schedule').onclick = async () => {
+  const enabled = document.getElementById('schedule-toggle').classList.contains('active');
+  const cron_expr = document.getElementById('cron-expr').value.trim();
+  const res = await fetch(API + '/api/schedule', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ enabled, cron_expr, timezone: 'Asia/Shanghai' }),
+  });
+  if (res.ok) {
+    toast('调度配置已保存 ✅');
+    await loadConfig();
+  } else {
+    toast('保存失败', 'error');
+  }
+};
+
+// ─── Email / OpenID ───────────────────────────────────
+document.getElementById('btn-save-email').onclick = async () => {
+  const email = document.getElementById('target-email').value.trim();
+  const res = await fetch(API + '/api/config/target-email', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ email }),
+  });
+  if (res.ok) { toast('邮箱已保存 ✅'); await loadConfig(); }
+  else { toast('保存失败', 'error'); }
+};
+
+document.getElementById('btn-save-openid').onclick = async () => {
+  const openid = document.getElementById('target-openid').value.trim();
+  const res = await fetch(API + '/api/config/target-openid', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ openid }),
+  });
+  if (res.ok) { toast('OpenID 已保存 ✅'); await loadConfig(); }
+  else { toast('保存失败', 'error'); }
+};
+
+// ─── Run ──────────────────────────────────────────────
+document.getElementById('btn-run-all').onclick = async () => {
+  document.getElementById('btn-run-all').disabled = true;
+  document.getElementById('run-status').style.display = 'block';
+  try {
+    const tempEmail = document.getElementById('run-temp-email').value.trim();
+    const res = await fetch(API + '/api/fetch', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ target_email: tempEmail || null }),
+    });
+    const data = await res.json();
+    toast('✅ ' + (data.message || '任务已启动'));
+  } catch(e) {
+    toast('启动失败: ' + e.message, 'error');
+  }
+  document.getElementById('btn-run-all').disabled = false;
+};
+
+document.getElementById('btn-run-single').onclick = async () => {
+  const groupId = document.getElementById('run-group-id').value.trim();
+  if (!groupId) { toast('请输入 Group ID', 'error'); return; }
+  document.getElementById('btn-run-single').disabled = true;
+  document.getElementById('run-status').style.display = 'block';
+  try {
+    const tempEmail = document.getElementById('run-temp-email').value.trim();
+    const res = await fetch(API + '/api/fetch', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ group_id: groupId, target_email: tempEmail || null }),
+    });
+    const data = await res.json();
+    toast('✅ ' + (data.message || '任务已启动'));
+  } catch(e) {
+    toast('启动失败: ' + e.message, 'error');
+  }
+  document.getElementById('btn-run-single').disabled = false;
+};
+
+// ─── Logs ─────────────────────────────────────────────
+async function loadLogs() {
+  document.getElementById('log-panel').textContent = '加载中...';
+  try {
+    const res = await fetch(API + '/api/logs/latest');
+    const data = await res.json();
+    document.getElementById('log-panel').textContent = data.content || '暂无日志';
+  } catch(e) {
+    document.getElementById('log-panel').textContent = '加载失败: ' + e.message;
+  }
+}
+
+document.getElementById('btn-refresh-logs').onclick = loadLogs;
+
+// ─── Init ─────────────────────────────────────────────
+async function init() {
+  await loadHealth();
+  await loadConfig();
+  await loadLogs();
+}
+
+init();
+</script>
+</body>
+</html>
