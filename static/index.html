@@ -6,96 +6,78 @@
 <title>Warmy Seed List 控制面板</title>
 <style>
   :root {
-    --bg: #1a1b1e;
-    --card: #25262b;
-    --border: #373a40;
-    --text: #c1c2c5;
-    --text-dim: #909296;
-    --accent: #4c6ef5;
-    --accent-hover: #5c7cfa;
-    --green: #40c057;
-    --green-bg: rgba(64, 192, 87, 0.12);
-    --red: #fa5252;
-    --red-bg: rgba(250, 82, 82, 0.12);
-    --yellow: #fab005;
+    --bg: #1a1b1e; --card: #25262b; --border: #373a40;
+    --text: #c1c2c5; --text-dim: #909296;
+    --accent: #4c6ef5; --accent-hover: #5c7cfa;
+    --green: #40c057; --green-bg: rgba(64,192,87,0.12);
+    --red: #fa5252; --red-bg: rgba(250,82,82,0.12);
+    --yellow: #fab005; --yellow-bg: rgba(250,176,5,0.12);
     --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--text);
-    padding: 20px;
-    max-width: 800px;
-    margin: 0 auto;
-    font-size: 14px;
-    line-height: 1.5;
+    font-family: var(--font); background: var(--bg); color: var(--text);
+    padding: 20px; max-width: 860px; margin: 0 auto; font-size: 14px; line-height: 1.5;
   }
-  h1 { font-size: 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-  h1 small { font-size: 13px; color: var(--text-dim); font-weight: normal; }
-  h2 { font-size: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  h1 { font-size: 20px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  h2 { font-size: 15px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  h3 { font-size: 13px; margin-bottom: 8px; color: var(--text-dim); }
+
   .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 16px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px; margin-bottom: 12px;
   }
   .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
   }
-  .badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 600;
-  }
+
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
   .badge-green { background: var(--green-bg); color: var(--green); }
   .badge-red { background: var(--red-bg); color: var(--red); }
-  .badge-dim { background: rgba(144, 146, 150, 0.12); color: var(--text-dim); }
+  .badge-yellow { background: var(--yellow-bg); color: var(--yellow); }
+  .badge-dim { background: rgba(144,146,150,0.12); color: var(--text-dim); }
 
-  .group-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
+  /* ── Setup Wizard ── */
+  .wizard { text-align: center; padding: 40px 20px; }
+  .wizard-icon { font-size: 48px; margin-bottom: 16px; }
+  .wizard h2 { justify-content: center; }
+  .wizard p { color: var(--text-dim); max-width: 480px; margin: 0 auto 20px; }
+  .wizard .steps { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; }
+  .wizard .step-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--border); }
+  .wizard .step-dot.done { background: var(--green); }
+  .wizard .step-dot.active { background: var(--accent); box-shadow: 0 0 0 3px rgba(76,110,245,0.3); }
+
+  /* ── Status Bar ── */
+  .status-bar {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;
   }
-  .group-row:last-child { border-bottom: none; }
-  .group-info { flex: 1; }
-  .group-name { font-weight: 600; }
-  .group-id { font-size: 12px; color: var(--text-dim); }
+  .status-item {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 6px; padding: 10px 14px; flex: 1; min-width: 120px;
+  }
+  .status-item .label { font-size: 11px; color: var(--text-dim); margin-bottom: 4px; }
+  .status-item .value { font-size: 13px; font-weight: 600; }
+  .status-item .value.ok { color: var(--green); }
+  .status-item .value.no { color: var(--red); }
 
+  /* ── Forms ── */
+  label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
   input, select, textarea {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 14px;
-    width: 100%;
-    font-family: var(--font);
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); padding: 8px 12px; border-radius: 6px;
+    font-size: 14px; width: 100%; font-family: var(--font);
   }
-  input:focus, select:focus { outline: none; border-color: var(--accent); }
+  input:focus { outline: none; border-color: var(--accent); }
+  .input-row { margin-bottom: 10px; }
   .input-group { display: flex; gap: 8px; align-items: center; }
   .input-group input { flex: 1; }
-  .input-row { margin-bottom: 10px; }
-  .input-row label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
+  .input-group-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .input-group-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; }
 
   .btn {
-    padding: 7px 16px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    white-space: nowrap;
-    transition: all 0.15s;
-    font-family: var(--font);
+    padding: 8px 18px; border: none; border-radius: 6px; cursor: pointer;
+    font-size: 13px; font-weight: 500; white-space: nowrap;
+    transition: all 0.15s; font-family: var(--font);
   }
   .btn-primary { background: var(--accent); color: #fff; }
   .btn-primary:hover { background: var(--accent-hover); }
@@ -104,253 +86,276 @@
   .btn-success { background: var(--green); color: #fff; }
   .btn-success:hover { background: #2f9e44; }
   .btn-outline {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text);
+    background: transparent; border: 1px solid var(--border); color: var(--text);
   }
   .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
   .btn-sm { padding: 4px 10px; font-size: 12px; }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  .flex { display: flex; }
-  .flex-center { align-items: center; }
-  .gap-8 { gap: 8px; }
-  .gap-12 { gap: 12px; }
-  .mt-8 { margin-top: 8px; }
-  .mt-12 { margin-top: 12px; }
-  .mb-8 { margin-bottom: 8px; }
-  .text-dim { color: var(--text-dim); }
-  .text-sm { font-size: 12px; }
+  .group-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid var(--border);
+  }
+  .group-row:last-child { border-bottom: none; }
+  .group-info { flex: 1; }
+  .group-name { font-weight: 600; font-size: 13px; }
+  .group-id { font-size: 12px; color: var(--text-dim); }
 
   .toggle {
-    position: relative;
-    width: 40px;
-    height: 22px;
-    background: var(--border);
-    border-radius: 11px;
-    cursor: pointer;
-    transition: background 0.2s;
-    flex-shrink: 0;
+    position: relative; width: 38px; height: 20px;
+    background: var(--border); border-radius: 10px;
+    cursor: pointer; transition: background 0.2s; flex-shrink: 0;
   }
   .toggle.active { background: var(--accent); }
   .toggle::after {
-    content: '';
-    position: absolute;
-    top: 2px; left: 2px;
-    width: 18px; height: 18px;
-    background: #fff;
-    border-radius: 50%;
-    transition: transform 0.2s;
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 16px; height: 16px; background: #fff;
+    border-radius: 50%; transition: transform 0.2s;
   }
   .toggle.active::after { transform: translateX(18px); }
 
   #log-panel {
-    max-height: 300px;
-    overflow-y: auto;
-    background: var(--bg);
-    border-radius: 6px;
-    padding: 10px;
+    max-height: 280px; overflow-y: auto; background: var(--bg);
+    border-radius: 6px; padding: 10px;
     font-family: 'SF Mono', Menlo, monospace;
-    font-size: 12px;
-    line-height: 1.6;
-    white-space: pre-wrap;
-    word-break: break-all;
+    font-size: 12px; line-height: 1.6; white-space: pre-wrap; word-break: break-all;
   }
 
-  /* cron 快捷选择 */
-  .cron-presets {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 8px;
-  }
+  .cron-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
   .cron-presets button {
-    padding: 4px 10px;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    background: transparent;
-    color: var(--text);
-    cursor: pointer;
-    font-size: 12px;
-    font-family: var(--font);
-    transition: all 0.15s;
+    padding: 4px 10px; border: 1px solid var(--border); border-radius: 4px;
+    background: transparent; color: var(--text); cursor: pointer;
+    font-size: 12px; font-family: var(--font); transition: all 0.15s;
   }
-  .cron-presets button:hover,
-  .cron-presets button.active {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(76, 110, 245, 0.1);
+  .cron-presets button:hover, .cron-presets button.active {
+    border-color: var(--accent); color: var(--accent);
+    background: rgba(76,110,245,0.1);
   }
 
   .toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--card);
-    border: 1px solid var(--border);
-    padding: 10px 20px;
-    border-radius: 8px;
-    z-index: 999;
-    font-size: 13px;
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
-    max-width: 90%;
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: var(--card); border: 1px solid var(--border);
+    padding: 10px 20px; border-radius: 8px; z-index: 999;
+    font-size: 13px; opacity: 0; transition: opacity 0.3s;
+    pointer-events: none; max-width: 90%;
   }
   .toast.show { opacity: 1; }
   .toast.success { border-color: var(--green); }
   .toast.error { border-color: var(--red); }
 
   .loading {
-    display: inline-block;
-    width: 14px; height: 14px;
-    border: 2px solid var(--text-dim);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.6s linear infinite;
+    display: inline-block; width: 14px; height: 14px;
+    border: 2px solid var(--text-dim); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 0.6s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   @media (max-width: 600px) {
     body { padding: 12px; }
     .card { padding: 12px; }
+    .input-group-2, .input-group-3 { grid-template-columns: 1fr; }
+    .status-item { min-width: 90px; }
   }
 
-  .status-dot {
-    display: inline-block;
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    margin-right: 6px;
+  .section { margin-bottom: 12px; }
+  .section-title {
+    display: flex; align-items: center; gap: 8px;
+    cursor: pointer; padding: 8px 0; user-select: none;
   }
-  .status-dot.on { background: var(--green); }
-  .status-dot.off { background: var(--red); }
+  .section-title:hover { color: var(--accent); }
+  .section-title .arrow { transition: transform 0.2s; }
+  .section-title .arrow.open { transform: rotate(90deg); }
+  .section-body { padding: 8px 0 0 0; }
+  .section-body.hidden { display: none; }
+
+  pre { font-family: 'SF Mono', Menlo, monospace; font-size: 12px; }
+
+  .hidden { display: none !important; }
+  .mt-8 { margin-top: 8px; }
+  .mb-8 { margin-bottom: 8px; }
+  .gap-8 { gap: 8px; }
+  .flex { display: flex; }
+  .flex-center { align-items: center; }
+  .text-dim { color: var(--text-dim); }
+  .text-sm { font-size: 12px; }
+  .text-center { text-align: center; }
 </style>
 </head>
 <body>
 
-<h1>📊 Warmy Seed List <small>控制面板</small></h1>
+<h1>📊 Warmy Seed List <small class="text-dim text-sm">自动邮箱预热</small></h1>
 
 <!-- Toast -->
 <div id="toast" class="toast"></div>
 
-<!-- 状态概览 -->
-<div class="card">
-  <div class="card-header">
-    <h2>🔌 服务状态</h2>
-    <span id="server-status" class="badge badge-dim">检查中...</span>
-  </div>
-  <div class="flex flex-center gap-12 text-sm">
-    <span>已配置: <strong id="group-count">-</strong> 个 Sender</span>
-    <span>调度: <strong id="schedule-label">-</strong></span>
-    <span>目标邮箱: <strong id="status-email">-</strong></span>
-  </div>
-</div>
+<!-- Status Bar -->
+<div class="status-bar" id="status-bar"></div>
 
-<!-- 立即执行 -->
-<div class="card">
-  <div class="card-header">
-    <h2>⚡ 立即执行</h2>
-    <button id="btn-run-all" class="btn btn-success">▶ 运行所有启用的</button>
-  </div>
-  <div class="input-row">
-    <label>指定 Group ID（可选，留空则拉取所有启用）</label>
-    <div class="input-group">
-      <input id="run-group-id" placeholder="例如 19496" />
-      <button id="btn-run-single" class="btn btn-primary">▶ 运行</button>
+<!-- ── Setup Wizard (all sections collapsed) ── -->
+<div id="app-main">
+
+  <!-- Step 1: Warmy Credentials -->
+  <div class="card">
+    <div class="section-title" onclick="toggleSection('sec-warmy')">
+      <span class="arrow">▶</span>
+      <span>① Warmy API 凭证</span>
+      <span id="warmy-status" class="badge badge-red">未配置</span>
     </div>
-  </div>
-  <div class="input-row mt-8">
-    <label>临时目标邮箱（可选，覆盖默认配置）</label>
-    <input id="run-temp-email" placeholder="留空使用默认邮箱" />
-  </div>
-  <div class="mt-8 text-sm text-dim" id="run-status" style="display:none;">
-    <span class="loading"></span> 后台任务已启动...
-  </div>
-</div>
-
-<!-- Sender 管理 -->
-<div class="card">
-  <div class="card-header">
-    <h2>📋 Sender Groups</h2>
-    <button id="btn-add-group-show" class="btn btn-sm btn-outline">+ 新增</button>
-  </div>
-
-  <!-- 添加表单 -->
-  <div id="add-group-form" style="display:none;" class="mb-8">
-    <div class="flex gap-8">
-      <input id="new-split-id" placeholder="Split ID" style="flex:1;" />
-      <input id="new-sender-name" placeholder="名称（如 mosscode）" style="flex:2;" />
-      <button id="btn-add-group-confirm" class="btn btn-primary btn-sm">添加</button>
-      <button id="btn-add-group-cancel" class="btn btn-outline btn-sm">取消</button>
+    <div id="sec-warmy" class="section-body hidden">
+      <div class="input-row">
+        <label>API Key <span class="text-dim">(Warmy Dashboard → Settings)</span></label>
+        <input id="warmy-api-key" type="password" placeholder="wmy_..." />
+      </div>
+      <div class="input-row">
+        <label>Holder UID</label>
+        <input id="warmy-holder-uid" placeholder="从 Warmy 获取" />
+      </div>
+      <button class="btn btn-primary mt-8" onclick="saveWarmy()">保存</button>
     </div>
   </div>
 
-  <div id="group-list"></div>
-</div>
-
-<!-- 调度配置 -->
-<div class="card">
-  <div class="card-header">
-    <h2>⏰ 定时调度</h2>
-  </div>
-  <div class="flex flex-center gap-12 mb-8">
-    <span class="text-sm">启用调度</span>
-    <div id="schedule-toggle" class="toggle"></div>
-  </div>
-  <div class="input-row">
-    <label>Cron 表达式</label>
-    <input id="cron-expr" value="0 12 * * 1" />
-  </div>
-  <div class="text-sm text-dim mb-8">
-    时区: Asia/Shanghai · 
-    提示: 修改后需要手动更新 OpenClaw cron job 才能生效
-  </div>
-  <div class="cron-presets" id="cron-presets">
-    <button data-cron="0 12 * * 1">每周一 12:00</button>
-    <button data-cron="0 12 * * 1,3,5">周一/三/五 12:00</button>
-    <button data-cron="0 12 * * 1-5">工作日 12:00</button>
-    <button data-cron="0 9,12,15 * * 1-5">工作日 9/12/15点</button>
-    <button data-cron="0 8 * * 1">周一 08:00</button>
-    <button data-cron="0 6 * * 1">周一 06:00</button>
-  </div>
-  <button id="btn-save-schedule" class="btn btn-primary mt-8">保存调度配置</button>
-</div>
-
-<!-- 发送配置 -->
-<div class="card">
-  <div class="card-header">
-    <h2>📬 发送配置</h2>
-  </div>
-  <div class="input-row">
-    <label>SMTP 目标邮箱（接收 Excel 附件）</label>
-    <div class="input-group">
-      <input id="target-email" type="email" />
-      <button id="btn-save-email" class="btn btn-primary btn-sm">保存</button>
+  <!-- Step 2: SMTP -->
+  <div class="card">
+    <div class="section-title" onclick="toggleSection('sec-smtp')">
+      <span class="arrow">▶</span>
+      <span>② SMTP 发信配置</span>
+      <span id="smtp-status" class="badge badge-red">未配置</span>
+    </div>
+    <div id="sec-smtp" class="section-body hidden">
+      <div class="input-row">
+        <label>发信邮箱 (From)</label>
+        <input id="smtp-user" placeholder="you@company.com" />
+      </div>
+      <div class="input-row">
+        <label>SMTP 密码 / 授权码</label>
+        <input id="smtp-password" type="password" placeholder="SMTP 密码或授权码" />
+      </div>
+      <div class="input-group-2">
+        <div class="input-row">
+          <label>SMTP 服务器</label>
+          <input id="smtp-host" placeholder="smtp.exmail.qq.com" />
+        </div>
+        <div class="input-row">
+          <label>端口</label>
+          <input id="smtp-port" type="number" placeholder="465" />
+        </div>
+      </div>
+      <button class="btn btn-primary mt-8" onclick="saveSmtp()">保存</button>
     </div>
   </div>
-  <div class="input-row mt-8">
-    <label>飞书分享用户 OpenID</label>
-    <div class="input-group">
-      <input id="target-openid" />
-      <button id="btn-save-openid" class="btn btn-primary btn-sm">保存</button>
+
+  <!-- Step 3: Feishu + Target Email -->
+  <div class="card">
+    <div class="section-title" onclick="toggleSection('sec-feishu')">
+      <span class="arrow">▶</span>
+      <span>③ 飞书 & 收件邮箱</span>
+      <span id="feishu-email-status" class="badge badge-red">未配置</span>
+    </div>
+    <div id="sec-feishu" class="section-body hidden">
+      <h3>飞书应用凭证（用于上传 Excel 到飞书云盘）</h3>
+      <div class="input-row">
+        <label>App ID</label>
+        <input id="feishu-app-id" placeholder="cli_..." />
+      </div>
+      <div class="input-row">
+        <label>App Secret</label>
+        <input id="feishu-app-secret" type="password" placeholder="飞书应用 App Secret" />
+      </div>
+      <div class="input-row">
+        <label>群机器人 Webhook URL <span class="text-dim">(可选，用于发送通知卡片)</span></label>
+        <input id="feishu-webhook-url" placeholder="https://open.feishu.cn/open-apis/bot/v2/hook/..." />
+      </div>
+      <hr style="border-color:var(--border);margin:10px 0;">
+      <h3>收件邮箱</h3>
+      <div class="input-row">
+        <label>接收 Seed List Excel 附件的邮箱</label>
+        <input id="target-email" type="email" placeholder="recipient@company.com" />
+        <div class="text-sm text-dim mt-8">文件会通过 SMTP 发送到此邮箱（附件形式）</div>
+      </div>
+      <button class="btn btn-primary mt-8" onclick="saveFeishuAndEmail()">保存</button>
     </div>
   </div>
-</div>
 
-<!-- 运行日志 -->
-<div class="card">
-  <div class="card-header">
-    <h2>📜 运行日志</h2>
-    <button id="btn-refresh-logs" class="btn btn-sm btn-outline">🔄 刷新</button>
+  <!-- Step 4: Split ID Groups -->
+  <div class="card">
+    <div class="section-title" onclick="toggleSection('sec-groups')">
+      <span class="arrow">▶</span>
+      <span>④ Warmy Split Groups</span>
+      <span id="groups-status" class="badge badge-red">0 个</span>
+    </div>
+    <div id="sec-groups" class="section-body hidden">
+      <p class="text-dim text-sm mb-8">
+        每个 Split Group 对应一个 Warmy 预热发送者。添加后可以在下方立即运行，或定时自动执行。
+      </p>
+      <div class="flex gap-8 mb-8">
+        <input id="new-split-id" placeholder="Split ID（数字）" style="flex:1;" />
+        <input id="new-sender-name" placeholder="显示名称（如 sender.com）" style="flex:2;" />
+        <button class="btn btn-primary btn-sm" onclick="addGroup()">+ 添加</button>
+      </div>
+      <div id="group-list"></div>
+    </div>
   </div>
-  <div id="log-panel">点击「刷新」加载日志...</div>
+
+  <!-- Step 5: Schedule & Run -->
+  <div class="card">
+    <div class="section-title" onclick="toggleSection('sec-run')">
+      <span class="arrow">▶</span>
+      <span>⑤ 立即运行 & 定时</span>
+      <span id="schedule-status" class="badge badge-dim">未启用</span>
+    </div>
+    <div id="sec-run" class="section-body hidden">
+      <!-- Manual trigger -->
+      <div class="flex gap-8 mb-8">
+        <input id="run-group-id" placeholder="指定 Group ID（留空=运行所有）" style="flex:2;" />
+        <input id="run-temp-email" placeholder="临时邮箱（可选）" style="flex:2;" />
+        <button id="btn-run" class="btn btn-success" onclick="triggerRun()">▶ 运行</button>
+      </div>
+      <div id="run-status" class="text-sm text-dim mt-8 hidden">
+        <span class="loading"></span> 后台任务已启动，请稍后刷新日志查看结果...
+      </div>
+
+      <hr style="border-color:var(--border);margin:12px 0;">
+
+      <!-- Schedule -->
+      <h3>定时调度</h3>
+      <div class="flex gap-8 flex-center mb-8">
+        <div id="schedule-toggle" class="toggle"></div>
+        <span class="text-sm">启用定时</span>
+      </div>
+      <div class="input-row">
+        <label>Cron 表达式 <span class="text-dim">(时区: Asia/Shanghai)</span></label>
+        <input id="cron-expr" value="0 12 * * 1" />
+      </div>
+      <div class="cron-presets">
+        <button data-cron="0 12 * * 1">每周一 12:00</button>
+        <button data-cron="0 12 * * 1,3,5">一/三/五 12:00</button>
+        <button data-cron="0 12 * * 1-5">工作日 12:00</button>
+        <button data-cron="0 9,12,15 * * 1-5">工作日 9/12/15点</button>
+        <button data-cron="0 8 * * 1">周一 08:00</button>
+        <button data-cron="0 */6 * * *">每 6 小时</button>
+      </div>
+      <button class="btn btn-primary mt-8" onclick="saveSchedule()">保存调度</button>
+      <div class="text-dim text-sm mt-8">
+        💡 保存后，在 Railway 控制台创建一个 Cron Job 指向 <code>https://你的域名/api/fetch</code> 即可定时自动运行。
+      </div>
+    </div>
+  </div>
+
+  <!-- Logs -->
+  <div class="card">
+    <div class="card-header">
+      <h2>📜 运行日志</h2>
+      <button class="btn btn-sm btn-outline" onclick="loadLogs()">🔄 刷新</button>
+    </div>
+    <div id="log-panel">点击「刷新」加载最后一次运行日志...</div>
+  </div>
 </div>
 
 <script>
-// ─── API 地址 ────────────────────────────────────────
+// ─── Globals ──────────────────────────────────────────
 const API = '';
-// 同域请求
+let config = null;
+let status = null;
 
 // ─── Toast ────────────────────────────────────────────
 let toastTimer = null;
@@ -362,123 +367,264 @@ function toast(msg, type = 'info') {
   toastTimer = setTimeout(() => el.className = 'toast', 3000);
 }
 
-// ─── 状态 ─────────────────────────────────────────────
-let config = null;
+// ─── Section toggle ───────────────────────────────────
+function toggleSection(id) {
+  const body = document.getElementById(id);
+  const arrow = body.parentElement.querySelector('.arrow');
+  if (body.classList.contains('hidden')) {
+    body.classList.remove('hidden');
+    arrow.classList.add('open');
+  } else {
+    body.classList.add('hidden');
+    arrow.classList.remove('open');
+  }
+}
+
+// ─── Load ─────────────────────────────────────────────
+async function loadAll() {
+  await loadStatus();
+  await loadConfig();
+  await loadLogs();
+}
+
+async function loadStatus() {
+  try {
+    const res = await fetch(API + '/api/config/status');
+    status = await res.json();
+  } catch(e) {
+    status = null;
+  }
+  renderStatusBar();
+}
 
 async function loadConfig() {
-  const res = await fetch(API + '/api/config');
-  config = await res.json();
-  renderGroups();
-  renderStatus();
-  document.getElementById('target-email').value = config.target_email || '';
-  document.getElementById('target-openid').value = config.target_openid || '';
-  document.getElementById('cron-expr').value = config.schedule?.cron_expr || '0 12 * * 1';
-  
-  const toggle = document.getElementById('schedule-toggle');
-  toggle.classList.toggle('active', config.schedule?.enabled === true);
-
-  // 高亮对应的 presets
-  document.querySelectorAll('.cron-presets button').forEach(b => {
-    b.classList.toggle('active', b.dataset.cron === config.schedule?.cron_expr);
-  });
-}
-
-async function loadHealth() {
   try {
-    const res = await fetch(API + '/api/health');
-    const h = await res.json();
-    document.getElementById('server-status').textContent = '🟢 运行中';
-    document.getElementById('server-status').className = 'badge badge-green';
-    document.getElementById('group-count').textContent = h.groups_count;
+    const res = await fetch(API + '/api/config');
+    config = await res.json();
   } catch(e) {
-    document.getElementById('server-status').textContent = '🔴 离线';
-    document.getElementById('server-status').className = 'badge badge-red';
-  }
-}
-
-function renderStatus() {
-  if (!config) return;
-  document.getElementById('schedule-label').textContent =
-    config.schedule?.enabled ? config.schedule.label || config.schedule.cron_expr : '未启用';
-  document.getElementById('status-email').textContent = config.target_email || '未设置';
-}
-
-function renderGroups() {
-  const list = document.getElementById('group-list');
-  if (!config || !config.groups.length) {
-    list.innerHTML = '<div class="text-dim text-sm">暂无配置，点击「+ 新增」添加 Sender Group</div>';
+    config = null;
     return;
   }
-  list.innerHTML = config.groups.map((g, i) => `
-    <div class="group-row">
-      <div class="toggle ${g.enabled ? 'active' : ''}" data-idx="${i}"
-           onclick="toggleGroup(${i})"></div>
-      <div class="group-info">
-        <div class="group-name">${escHtml(g.name)}</div>
-        <div class="group-id">Split ID: ${escHtml(g.split_id)}</div>
-      </div>
-      <button class="btn btn-sm btn-danger" onclick="removeGroup('${escHtml(g.split_id)}')">删除</button>
+  renderConfig();
+}
+
+function renderStatusBar() {
+  if (!status) {
+    document.getElementById('status-bar').innerHTML = '<span class="badge badge-red">无法连接服务器</span>';
+    return;
+  }
+  const items = [
+    { label: 'Warmy', ok: status.warmy_ready },
+    { label: 'SMTP', ok: status.smtp_ready },
+    { label: '飞书', ok: status.feishu_ready },
+    { label: '邮箱', ok: status.email_set },
+    { label: 'Groups', ok: status.groups_count > 0, text: `${status.groups_count} 个` },
+    { label: '就绪', ok: status.ready, text: status.ready ? '✅ 可以运行' : '⚠️ 缺少配置' },
+  ];
+  document.getElementById('status-bar').innerHTML = items.map(i => `
+    <div class="status-item">
+      <div class="label">${i.label}</div>
+      <div class="value ${i.ok ? 'ok' : 'no'}">${i.text || (i.ok ? '✅ 已配置' : '❌ 未配置')}</div>
     </div>
   `).join('');
 }
 
-function escHtml(s) {
-  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+function renderConfig() {
+  if (!config) return;
+
+  // Warmy
+  const w = config.warmy || {};
+  document.getElementById('warmy-api-key').value = '';
+  document.getElementById('warmy-holder-uid').value = '';
+  const wBadge = document.getElementById('warmy-status');
+  if (w.has_api_key) { wBadge.textContent = '已配置'; wBadge.className = 'badge badge-green'; }
+  else { wBadge.textContent = '未配置'; wBadge.className = 'badge badge-red'; }
+
+  // SMTP
+  const s = config.smtp || {};
+  document.getElementById('smtp-host').value = s.host || '';
+  document.getElementById('smtp-port').value = s.port || 465;
+  document.getElementById('smtp-user').value = s.user || '';
+  document.getElementById('smtp-password').value = '';
+  const smtpBadge = document.getElementById('smtp-status');
+  if (s.host && s.user && s.has_password) { smtpBadge.textContent = '已配置'; smtpBadge.className = 'badge badge-green'; }
+  else { smtpBadge.textContent = '未配置'; smtpBadge.className = 'badge badge-red'; }
+
+  // Feishu & Email
+  const f = config.feishu || {};
+  document.getElementById('feishu-app-id').value = f.has_app_id ? '(已设置)' : '';
+  document.getElementById('feishu-app-secret').value = '';
+  document.getElementById('feishu-webhook-url').value = f.webhook_url || '';
+  document.getElementById('target-email').value = config.target_email || '';
+  const feBadge = document.getElementById('feishu-email-status');
+  const feOk = f.has_app_id && f.has_app_secret && config.target_email;
+  if (feOk) { feBadge.textContent = '已配置'; feBadge.className = 'badge badge-green'; }
+  else { feBadge.textContent = '未配置'; feBadge.className = 'badge badge-red'; }
+
+  // Groups
+  renderGroupList();
+
+  // Schedule
+  const sc = config.schedule || {};
+  const sBadge = document.getElementById('schedule-status');
+  const st = document.getElementById('schedule-toggle');
+  st.classList.toggle('active', sc.enabled === true);
+  document.getElementById('cron-expr').value = sc.cron_expr || '0 12 * * 1';
+  if (sc.enabled) { sBadge.textContent = sc.cron_expr; sBadge.className = 'badge badge-green'; }
+  else { sBadge.textContent = '未启用'; sBadge.className = 'badge badge-dim'; }
+  document.querySelectorAll('.cron-presets button').forEach(b => {
+    b.classList.toggle('active', b.dataset.cron === sc.cron_expr);
+  });
+
+  // Schedule toggle click
+  st.onclick = function() { this.classList.toggle('active'); };
 }
 
-// ─── Group CRUD ───────────────────────────────────────
-document.getElementById('btn-add-group-show').onclick = () => {
-  document.getElementById('add-group-form').style.display = 'block';
-};
-document.getElementById('btn-add-group-cancel').onclick = () => {
-  document.getElementById('add-group-form').style.display = 'none';
-  document.getElementById('new-split-id').value = '';
-  document.getElementById('new-sender-name').value = '';
-};
-document.getElementById('btn-add-group-confirm').onclick = async () => {
+function renderGroupList() {
+  const list = document.getElementById('group-list');
+  const groups = config?.groups || [];
+  document.getElementById('groups-status').textContent = `${groups.length} 个`;
+  document.getElementById('groups-status').className = groups.length > 0 ? 'badge badge-green' : 'badge badge-red';
+
+  if (!groups.length) {
+    list.innerHTML = '<div class="text-dim text-sm">暂无 Split Group，在上方添加。</div>';
+    return;
+  }
+  list.innerHTML = groups.map((g, i) => `
+    <div class="group-row">
+      <div class="toggle ${g.enabled ? 'active' : ''}" onclick="toggleGroup(${i})"></div>
+      <div class="group-info">
+        <div class="group-name">${esc(g.name)}</div>
+        <div class="group-id">Split ID: ${esc(g.split_id)}</div>
+      </div>
+      <button class="btn btn-sm btn-danger" onclick="removeGroup('${esc(g.split_id)}')">删除</button>
+    </div>
+  `).join('');
+}
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ─── Save Actions ─────────────────────────────────────
+async function saveWarmy() {
+  const api_key = document.getElementById('warmy-api-key').value.trim();
+  const holder_uid = document.getElementById('warmy-holder-uid').value.trim();
+  if (!api_key || !holder_uid) { toast('请填写 API Key 和 Holder UID', 'error'); return; }
+  const res = await fetch(API + '/api/config/warmy', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ api_key, holder_uid }),
+  });
+  if (res.ok) { toast('Warmy 配置已保存 ✅'); await loadAll(); }
+  else { toast('保存失败', 'error'); }
+}
+
+async function saveSmtp() {
+  const host = document.getElementById('smtp-host').value.trim();
+  const port = parseInt(document.getElementById('smtp-port').value) || 465;
+  const user = document.getElementById('smtp-user').value.trim();
+  const password = document.getElementById('smtp-password').value;
+  if (!host || !user || !password) { toast('请填写 SMTP 服务器、邮箱和密码', 'error'); return; }
+  const res = await fetch(API + '/api/config/smtp', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ host, port, user, password }),
+  });
+  if (res.ok) { toast('SMTP 配置已保存 ✅'); await loadAll(); }
+  else { toast('保存失败', 'error'); }
+}
+
+async function saveFeishuAndEmail() {
+  const app_id = document.getElementById('feishu-app-id').value.trim();
+  const app_secret_val = document.getElementById('feishu-app-secret').value;
+  const webhook_url = document.getElementById('feishu-webhook-url').value.trim();
+  const email = document.getElementById('target-email').value.trim();
+
+  let app_secret = app_secret_val;
+  // If user didn't change it, keep existing
+  if (!app_secret && config?.feishu?.has_app_secret) {
+    app_secret = '__keep__';
+  }
+
+  if (!email) { toast('请填写目标邮箱', 'error'); return; }
+
+  const resF = await fetch(API + '/api/config/feishu', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ app_id, app_secret, webhook_url }),
+  });
+  const resE = await fetch(API + '/api/config/target-email', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ email }),
+  });
+  if (resF.ok && resE.ok) { toast('飞书和邮箱配置已保存 ✅'); await loadAll(); }
+  else { toast('保存失败', 'error'); }
+}
+
+async function addGroup() {
   const split_id = document.getElementById('new-split-id').value.trim();
   const name = document.getElementById('new-sender-name').value.trim();
   if (!split_id) { toast('请输入 Split ID', 'error'); return; }
   const res = await fetch(API + '/api/config/groups', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    method: 'POST', headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({ split_id, name: name || `group_${split_id}`, enabled: true }),
   });
   if (res.ok) {
     toast('已添加 ✅');
-    await loadConfig();
-    document.getElementById('add-group-form').style.display = 'none';
     document.getElementById('new-split-id').value = '';
     document.getElementById('new-sender-name').value = '';
-  } else {
-    toast('添加失败', 'error');
-  }
-};
+    await loadConfig();
+  } else { toast('添加失败', 'error'); }
+}
 
 async function toggleGroup(idx) {
-  if (!config) return;
+  if (!config?.groups) return;
   const g = config.groups[idx];
   g.enabled = !g.enabled;
   const res = await fetch(API + '/api/config/groups', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(g),
+    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(g),
   });
   if (res.ok) await loadConfig();
 }
 
 async function removeGroup(splitId) {
-  if (!confirm(`确认删除 Split ${splitId}?`)) return;
+  if (!confirm(`删除 Split ${splitId}?`)) return;
   const res = await fetch(API + `/api/config/groups/${splitId}`, { method: 'DELETE' });
-  if (res.ok) {
-    toast('已删除');
-    await loadConfig();
-  } else {
-    toast('删除失败', 'error');
-  }
+  if (res.ok) { toast('已删除'); await loadConfig(); }
 }
 
-// ─── Schedule ─────────────────────────────────────────
+async function saveSchedule() {
+  const enabled = document.getElementById('schedule-toggle').classList.contains('active');
+  const cron_expr = document.getElementById('cron-expr').value.trim();
+  const res = await fetch(API + '/api/config/schedule', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ enabled, cron_expr, timezone: 'Asia/Shanghai' }),
+  });
+  if (res.ok) { toast('调度配置已保存 ✅'); await loadConfig(); }
+  else { toast('保存失败', 'error'); }
+}
+
+// ─── Run ──────────────────────────────────────────────
+async function triggerRun() {
+  if (!status?.ready) {
+    toast('配置不完整，请先完成所有配置项', 'error');
+    return;
+  }
+  document.getElementById('btn-run').disabled = true;
+  document.getElementById('run-status').classList.remove('hidden');
+  try {
+    const groupId = document.getElementById('run-group-id').value.trim() || null;
+    const tempEmail = document.getElementById('run-temp-email').value.trim() || null;
+    const res = await fetch(API + '/api/fetch', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ group_id: groupId, target_email: tempEmail }),
+    });
+    const data = await res.json();
+    if (res.ok) toast('✅ ' + (data.message || '任务已启动'));
+    else toast('❌ ' + (data.detail || '未知错误'), 'error');
+  } catch(e) {
+    toast('启动失败: ' + e.message, 'error');
+  }
+  document.getElementById('btn-run').disabled = false;
+}
+
+// ─── Cron presets ─────────────────────────────────────
 document.querySelectorAll('.cron-presets button').forEach(b => {
   b.onclick = () => {
     document.querySelectorAll('.cron-presets button').forEach(x => x.classList.remove('active'));
@@ -487,110 +633,26 @@ document.querySelectorAll('.cron-presets button').forEach(b => {
   };
 });
 
-document.getElementById('schedule-toggle').onclick = function() {
-  this.classList.toggle('active');
-};
-
-document.getElementById('btn-save-schedule').onclick = async () => {
-  const enabled = document.getElementById('schedule-toggle').classList.contains('active');
-  const cron_expr = document.getElementById('cron-expr').value.trim();
-  const res = await fetch(API + '/api/schedule', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ enabled, cron_expr, timezone: 'Asia/Shanghai' }),
-  });
-  if (res.ok) {
-    toast('调度配置已保存 ✅');
-    await loadConfig();
-  } else {
-    toast('保存失败', 'error');
-  }
-};
-
-// ─── Email / OpenID ───────────────────────────────────
-document.getElementById('btn-save-email').onclick = async () => {
-  const email = document.getElementById('target-email').value.trim();
-  const res = await fetch(API + '/api/config/target-email', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ email }),
-  });
-  if (res.ok) { toast('邮箱已保存 ✅'); await loadConfig(); }
-  else { toast('保存失败', 'error'); }
-};
-
-document.getElementById('btn-save-openid').onclick = async () => {
-  const openid = document.getElementById('target-openid').value.trim();
-  const res = await fetch(API + '/api/config/target-openid', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ openid }),
-  });
-  if (res.ok) { toast('OpenID 已保存 ✅'); await loadConfig(); }
-  else { toast('保存失败', 'error'); }
-};
-
-// ─── Run ──────────────────────────────────────────────
-document.getElementById('btn-run-all').onclick = async () => {
-  document.getElementById('btn-run-all').disabled = true;
-  document.getElementById('run-status').style.display = 'block';
-  try {
-    const tempEmail = document.getElementById('run-temp-email').value.trim();
-    const res = await fetch(API + '/api/fetch', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ target_email: tempEmail || null }),
-    });
-    const data = await res.json();
-    toast('✅ ' + (data.message || '任务已启动'));
-  } catch(e) {
-    toast('启动失败: ' + e.message, 'error');
-  }
-  document.getElementById('btn-run-all').disabled = false;
-};
-
-document.getElementById('btn-run-single').onclick = async () => {
-  const groupId = document.getElementById('run-group-id').value.trim();
-  if (!groupId) { toast('请输入 Group ID', 'error'); return; }
-  document.getElementById('btn-run-single').disabled = true;
-  document.getElementById('run-status').style.display = 'block';
-  try {
-    const tempEmail = document.getElementById('run-temp-email').value.trim();
-    const res = await fetch(API + '/api/fetch', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ group_id: groupId, target_email: tempEmail || null }),
-    });
-    const data = await res.json();
-    toast('✅ ' + (data.message || '任务已启动'));
-  } catch(e) {
-    toast('启动失败: ' + e.message, 'error');
-  }
-  document.getElementById('btn-run-single').disabled = false;
-};
-
 // ─── Logs ─────────────────────────────────────────────
 async function loadLogs() {
-  document.getElementById('log-panel').textContent = '加载中...';
+  const panel = document.getElementById('log-panel');
+  panel.textContent = '加载中...';
   try {
     const res = await fetch(API + '/api/logs/latest');
     const data = await res.json();
-    document.getElementById('log-panel').textContent = data.content || '暂无日志';
+    panel.textContent = data.content || '暂无运行日志';
   } catch(e) {
-    document.getElementById('log-panel').textContent = '加载失败: ' + e.message;
+    panel.textContent = '加载失败: ' + e.message;
   }
 }
 
-document.getElementById('btn-refresh-logs').onclick = loadLogs;
-
 // ─── Init ─────────────────────────────────────────────
-async function init() {
-  await loadHealth();
-  await loadConfig();
-  await loadLogs();
-}
+loadAll();
 
-init();
+// Auto-refresh logs every 15s when visible
+setInterval(() => {
+  if (!document.hidden) loadLogs();
+}, 15000);
 </script>
 </body>
 </html>
