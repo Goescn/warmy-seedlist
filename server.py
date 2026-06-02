@@ -305,6 +305,83 @@ async def get_logs():
              "size": lp.stat().st_size} for lp in logs]
 
 
+# ─── Test Endpoints ────────────────────────────────────
+
+@app.post("/api/test/warmy")
+async def test_warmy(data: WarmyConfig):
+    """测试 Warmy API 连通性"""
+    import requests
+    try:
+        resp = requests.get(
+            "https://api.warmy.io/api/v2/users_splits",
+            headers={
+                "Authorization": f"Bearer {data.api_key}",
+                "Holder-Uid": data.holder_uid,
+                "Accept": "application/json"
+            },
+            timeout=10
+        )
+        if resp.status_code == 200:
+            return {"ok": True, "message": f"✅ Warmy API 连接成功 (HTTP {resp.status_code})"}
+        elif resp.status_code == 401:
+            return {"ok": False, "error": "❌ 认证失败 (401)，请检查 API Key 和 Holder UID"}
+        else:
+            return {"ok": False, "error": f"❌ HTTP {resp.status_code}: {resp.text[:200]}"}
+    except Exception as e:
+        return {"ok": False, "error": f"连接失败: {str(e)}"}
+
+
+@app.post("/api/test/smtp")
+async def test_smtp(data: SmtpConfig, target: Optional[str] = None):
+    """发送测试邮件到目标邮箱"""
+    from core import send_email_smtp
+    import tempfile
+    cfg = load_config()
+    to = target or cfg.get("target_email", "")
+    if not to:
+        raise HTTPException(400, "请先设置目标邮箱")
+    # 创建一个极简测试文件
+    f = tempfile.NamedTemporaryFile(suffix=".txt", delete=False, mode="w")
+    f.write("这是 Warmy Seed List 的 SMTP 连通性测试。\n如果收到此邮件，说明 SMTP 配置正确。\n")
+    f.close()
+    try:
+        sent = send_email_smtp(f.name, "smtp_test.txt", to,
+                               data.host, data.port, data.user, data.password)
+        if sent:
+            return {"ok": True, "message": f"✅ 测试邮件已发送到 {to}"}
+        return {"ok": False, "error": "发送失败"}
+    except Exception as e:
+        return {"ok": False, "error": f"SMTP 测试失败: {str(e)}"}
+    finally:
+        os.unlink(f.name)
+
+
+@app.post("/api/test/feishu")
+async def test_feishu(data: FeishuConfig):
+    """测试飞书凭据：获取 tenant access token"""
+    from core import get_tenant_token
+    try:
+        token = get_tenant_token(data.app_id, data.app_secret)
+        msg = f"✅ 飞书连接成功 (token 前8位: {token[:8]}...)"
+        if data.webhook_url:
+            # 也试一下 webhook
+            try:
+                import requests
+                r = requests.post(data.webhook_url,
+                    json={"msg_type": "text",
+                          "content": json.dumps({"text": "🔧 Warmy Seed List 连通性测试 - 如果看到此消息说明 Webhook 配置正确"})},
+                    timeout=10)
+                if r.status_code == 200:
+                    msg += " · Webhook 消息已发送"
+                else:
+                    msg += f" · 但 Webhook 返回 {r.status_code}"
+            except Exception as we:
+                msg += f" · Webhook 测试失败: {we}"
+        return {"ok": True, "message": msg}
+    except Exception as e:
+        return {"ok": False, "error": f"飞书连接失败: {str(e)}"}
+
+
 # ─── Health ───────────────────────────────────────────
 
 @app.get("/api/health")
